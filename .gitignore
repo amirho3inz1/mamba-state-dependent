@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+mamba-env/
+mamba-venv/
+.venv/
+venv/
+.ipynb_checkpoints/
+*.pt
+*.pth
+*.h5
+.env
