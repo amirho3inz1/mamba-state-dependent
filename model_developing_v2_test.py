@@ -112,7 +112,30 @@ def set_seed(seed):
 # ============================================================
 
 def prepare_repository():
+    """Find model.py and model_developing_v2.py.
 
+    Priority:
+      1. Both files uploaded directly to /content  -> use them, no GitHub needed.
+      2. Otherwise clone the repo and use its model.py; copy the modified
+         file from /content into the repo if it is not already there.
+    """
+
+    content = Path("/content")
+
+    local_original = content / f"{ORIGINAL_MODULE_NAME}.py"
+    local_modified = content / f"{MODIFIED_MODULE_NAME}.py"
+
+    # Option 1: everything uploaded to /content
+    if local_original.exists() and local_modified.exists():
+
+        print("Using model files uploaded to /content (no clone needed).")
+
+        if str(content) not in sys.path:
+            sys.path.insert(0, str(content))
+
+        return
+
+    # Option 2: clone the repository
     if not REPO_DIR.exists():
 
         REPO_DIR.parent.mkdir(
@@ -137,26 +160,26 @@ def prepare_repository():
     modified_file = REPO_DIR / f"{MODIFIED_MODULE_NAME}.py"
 
     if not original_file.exists():
-        raise FileNotFoundError(original_file)
 
-    # If model_developing_v2.py is not in the repo, look for an uploaded copy
-    # in /content and copy it into the repo folder.
+        if local_original.exists():
+            shutil.copy(local_original, original_file)
+            print(f"Copied {local_original} -> {original_file}")
+        else:
+            raise FileNotFoundError(
+                f"{ORIGINAL_MODULE_NAME}.py not found in {REPO_DIR} "
+                f"or /content. Upload it to /content."
+            )
+
     if not modified_file.exists():
 
-        uploaded = Path("/content") / f"{MODIFIED_MODULE_NAME}.py"
-
-        if uploaded.exists():
-
-            shutil.copy(uploaded, modified_file)
-
-            print(f"Copied {uploaded} -> {modified_file}")
-
+        if local_modified.exists():
+            shutil.copy(local_modified, modified_file)
+            print(f"Copied {local_modified} -> {modified_file}")
         else:
-
             raise FileNotFoundError(
                 f"{MODIFIED_MODULE_NAME}.py not found in {REPO_DIR} "
-                f"or /content. Upload it to Colab (left sidebar > Files) "
-                f"or push it to the repository."
+                f"or /content. Upload it to /content "
+                f"(Colab left sidebar > Files)."
             )
 
     if str(REPO_DIR) not in sys.path:
