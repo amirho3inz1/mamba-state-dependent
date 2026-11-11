@@ -1,8 +1,9 @@
 A modified implementation of Mamba leveraging a state dependent recurrent mechanism 
 incorporating Pytorch
 -------------------------------------------------------------------------
-Gist:
-In conventional mamba networks Bt , Ct and Δt are projected directly from xt which is the input vector. In other words, xt controls what to be written in Bt and Ct.  In some cases, the current word is pointing at a preceding word. E.g Consider the following sentences:
+In conventional mamba networks Bt , Ct and Δt are projected directly from xt which is the input vector.
+In other words, xt controls what to be written in Bt and Ct.
+In some cases, the current word is pointing at a preceding word. E.g Consider the following sentences:
 "The animal was hungry. It searched everywhere for food. Finally, it found a mouse."
 Imagine the model has already read:
 "The animal was hungry."
